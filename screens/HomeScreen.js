@@ -1,7 +1,7 @@
 //import { StatusBar } from 'expo-status-bar';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { StatusBar, Platform, Dimensions, Touchable } from 'react-native';
-import { TouchableOpacity, StyleSheet, Text, View, Button, Alert } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, View, Button, Alert, Image } from 'react-native';
 import React, { Component, useState, useEffect } from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -17,8 +17,37 @@ import {
 } from "react-native-responsive-screen";
 import { useNavigation } from '@react-navigation/native';
 import {Item2} from "./HabitCell.js";
+import { useIsFocused } from '@react-navigation/native';
+import axios from "axios";
+import * as ImagePicker from "expo-image-picker";
+import { Searchbar } from "react-native-paper";
+
+let imagename = "";
+let image = "";
 
 const Tab = createBottomTabNavigator();
+
+const postdata = async () => {
+  try {
+    fetch("http://192.168.0.30:8000/api/img/", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        imgname: imagename,
+        imge: image,
+        // imgname: "dd",
+        // imge: "https://cdn.pixabay.com/photo/2016/08/27/11/17/bag-1623898_960_720.jpg",
+      }),
+    })
+      .then((response) => response.json())
+      .then((result) => console.log(result));
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 function HomeScreen() {
   return (
@@ -61,21 +90,64 @@ function HomeScreen() {
       </Tab.Navigator>
   )
 }
+const certification = new Set();
+export{certification};
 
-function MainScreen({navigation, route}) {
+function MainScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedId, setSelectedId] = useState();
-  flag = false;
+  const isFocused = useIsFocused(); 
+
+  useEffect(() => {
+    return () => {
+    }
+    }, [isFocused]);
 
   const renderItem = ({ item }) => {
     return (
-      <Item2
-        item={item}
-        onPress={() => {
-          setModalVisible(!modalVisible);
-          setSelectedId(item.name);
-        }}
-      />
+      <TouchableOpacity onPress={() => {
+        console.log(item.name)
+        if (item.name === "헬스장 가기") {
+          navigation.navigate("MapSelect");
+        }
+        else if (item.name === "물 마시기") {
+          navigation.navigate("CameraScreen");
+        }
+        else if (item.name === "공부하기") {
+          navigation.navigate("StudySelect");
+        }
+        else if (item.name === "윗몸 일으키기") {
+          navigation.navigate("GyrosensorSelect");
+        }
+        else if (item.name === "공부하기") {
+          navigation.navigate("Cert_study");
+        }
+        else if (item.name === "청소하기") {
+          navigation.navigate("Cert_clean");
+        }
+        else if (item.name === "반려견 산책") {
+          navigation.navigate("Cert_walk");
+        }
+        else if (item.name === "책읽기") {
+          navigation.navigate("Cert_read");
+        }
+        else if (item.name === "영양제 먹기") {
+          navigation.navigate("Cert_pill");
+        }
+        else if (item.name === "명상하기") {
+          navigation.navigate("Cert_meditate");
+        }
+        else {navigation.navigate("Cert")};
+      }}>
+      <View style={styles.container2}>
+        <Image
+          source={item.img}
+          style={{ width: 25, height: 25, marginRight: 10 }}
+        />
+        <Text style={[styles.name2, certification.has(item.name) && styles.strikethrough]}>{item.name}</Text>
+        {/* <View>{console.log(certification)}</View> */}
+      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -109,7 +181,8 @@ function MainScreen({navigation, route}) {
             keyExtractor={(item) => item.name} />
         ) : ( 
           <Text>No selected habits.</Text>
-        )}
+        )
+        }
       </View>
     </View>
   )
@@ -119,6 +192,9 @@ const StatusBarHeight =
     Platform.OS === 'ios' ? getStatusBarHeight(true) : StatusBar.currentHeight;
 
 const styles = StyleSheet.create({
+  strikethrough: {
+    textDecorationLine: 'line-through',
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -176,16 +252,24 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginTop: 17
   },
+  container2: {
+    flex: 1,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 10,
+    backgroundColor: "rgba(255, 251, 241, 3)",
+  },
+  name2: {
+    flex: 1,
+    color: "black",
+    fontSize: 15,
+    fontWeight: "bold",
+    marginBottom: 5,
+    alignSelf: "flex-end",
+  },
 });
-
-function RankingScreen() {
-  return(
-  <View style={styles.container}>
-    <View style={styles.headerStyle}/>
-    <Text>여기 랭킹</Text>
-  </View>
-  )
-}
 
 //달력 한국버전 
 LocaleConfig.locales['ko_KR'] = {
@@ -284,6 +368,87 @@ class AgendaScreen extends Component {
     const date = new Date(time);
     return date.toISOString().split('T')[0];
   }
+}
+
+//랭킹!
+const fullWidth = Dimensions.get("window").width;
+
+const rankingData = [
+  {
+    rank: 1,
+    id: "Mumin",
+    score: 200,
+  },
+  {
+    rank: 2,
+    id: "cold",
+    score: 140,
+  },
+  {
+    rank: 3,
+    id: "habit",
+    score: 100,
+  },
+];
+
+const Item = ({ id, score, rank }) => (
+  <View style={styles.rankitem}>
+    <Text style={styles.title}>{rank}</Text>
+    <Text style={styles.title}>{id}</Text>
+    <Text style={styles.title}>{score}</Text>
+  </View>
+);
+
+function RankingScreen() {
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  const onChangeSearch = (query) => setSearchQuery(query);
+
+  return (
+    <View style={styles.rank_container}>
+      <View style={styles.headerStyle} />
+      <Text
+        style={{
+          fontSize: 50,
+          textAlign: "center",
+          fontWeight: "bold",
+          color: "#ffce57",
+          padding: 20,
+        }}
+      >
+        RANKING
+      </Text>
+      <View style={styles.rank_container}>
+        {/* <View style={styles.header}> */}
+        <View style={{ marginLeft: 15, marginRight: 15 }}>
+          <Searchbar
+            placeholder="친구를 찾아보세요!"
+            onChangeText={onChangeSearch}
+            value={searchQuery}
+            style={{
+              width: fullWidth,
+              backgroundColor: "rgba(255, 251, 241,3)",
+              marginBottom: 20,
+            }}
+          />
+          <View>
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              style={{
+                width: fullWidth,
+              }}
+              data={rankingData}
+              renderItem={({ item }) => (
+                <Item rank={item.rank} id={item.id} score={item.score} />
+              )}
+              keyExtractor={(item) => item.id}
+            />
+          </View>
+        </View>
+        {/* </View> */}
+      </View>
+    </View>
+  );
 }
 
 export default HomeScreen;

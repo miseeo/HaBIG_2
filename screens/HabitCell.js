@@ -52,36 +52,6 @@ const Item = ({
 );
 export { Item };
 
-const Item2 = ({ item, onPress }) => {
-  const navigation = useNavigation();
-  return(
-    <TouchableOpacity onPress={() => {
-      console.log(item.name)
-      if (item.name === "헬스장 가기") {
-        navigation.navigate("MapSelect");
-      }
-      else if (item.name === "물 마시기") {
-        navigation.navigate("CameraScreen");
-      }
-      else if (item.name === "공부하기") {
-        navigation.navigate("StudySelect");
-      }
-      else if (item.name === "윗몸 일으키기") {
-        navigation.navigate("GyrosensorSelect");
-      }
-      else {navigation.navigate("Cert")};
-    }}>
-      <View style={styles.container}>
-        <Image
-          source={item.img}
-          style={{ width: 25, height: 25, marginRight: 10 }}
-        />
-        <Text style={styles.name}>{item.name}</Text>
-      </View>
-    </TouchableOpacity>
-  )
-};
-export { Item2 };
 
 const styles = StyleSheet.create({
   container: {

@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Camera } from "expo-camera";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import {certification} from './HomeScreen.js'
 
 const WINDOW_HEIGHT = Dimensions.get("window").height;
 const CAPTURE_SIZE = Math.floor(WINDOW_HEIGHT * 0.08);
@@ -39,7 +40,8 @@ export default function CameraScreen({ navigation }) {
   const check = () => {
       if(flag){
       Alert.alert('인증되었습니다.');
-      navigation.navigate('Home')
+      certification.add('물 마시기')
+      navigation.navigate('Home', {certification})
       }
       else{
       Alert.alert('다시 인증해주세요.')

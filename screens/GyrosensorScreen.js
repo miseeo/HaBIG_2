@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image, Alert } from "react-native";
 import { DeviceMotion } from "expo-sensors";
 import { useEffect, useState } from "react";
 import { getStatusBarHeight } from "react-native-status-bar-height";
+import { certification } from "./HomeScreen";
 
 let count = 0;
 let flag = 1;
@@ -26,7 +27,9 @@ export default function GyrosensorScreen({ navigation, route }) {
       console.log(route.params.goal);
       if (route.params.goal == count) {
         Alert.alert("인증되었습니다!");
-        navigation.navigate("Home");
+        certification.add('윗몸 일으키기');
+        console.log(certification);
+        navigation.navigate("Home", certification);
         count = 0;
       }
     } else {

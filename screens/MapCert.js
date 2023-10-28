@@ -45,7 +45,7 @@ function MapCert({navigation}) {
             if(ck){
               Alert.alert('인증되었습니다.');
               //navigation.reset({routes: [{name: "home"}]})
-              navigation.navigate('Home', {name: '헬스장 가기'})
+              navigation.navigate('Home')
             }
             else{
               Alert.alert('다시 인증해주세요.')

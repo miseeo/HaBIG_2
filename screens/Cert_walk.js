@@ -2,8 +2,14 @@ import React, { Component, useState, useEffect } from 'react';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { StatusBar, Platform, Dimensions, Touchable } from 'react-native';
 import { FlatList, TouchableOpacity, StyleSheet, Image, Text, View, Button, Alert } from 'react-native';
+import { certification } from './HomeScreen';
 
-export default function Certification({navigation}) {
+export default function Cert_walk({navigation}) {
+    const check = () => {
+      certification.add('반려견 산책')
+      navigation.navigate('Home', certification)
+    }
+
     return(
       <View style={styles.container}>
         <View style={styles.headerStyle}/> 
@@ -15,7 +21,7 @@ export default function Certification({navigation}) {
         <View style={styles.header}>    
           <View style={{marginLeft: 15, marginRight: 15}}>
             <TouchableOpacity style={styles.button2} 
-              onPress={() => navigation.navigate('Home')}
+              onPress={() => check()}
               >
               <View style={styles.container2}>
                 <Text style={{flex: 1,
